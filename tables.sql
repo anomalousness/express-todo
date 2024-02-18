@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS todos;
 
 CREATE TABLE todos (
   id SERIAL PRIMARY KEY,
-  item VARCHAR(255),
+  task VARCHAR(255),
   completed BOOLEAN
 );
 

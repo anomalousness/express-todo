@@ -1,6 +1,6 @@
 TRUNCATE TABLE todos RESTART IDENTITY CASCADE;
 
-INSERT INTO todos ("item", "completed") VALUES
+INSERT INTO todos (task, completed) VALUES
 ('Eat', true),
 ('Sleep', false),
 ('Pray', false)
