@@ -23,7 +23,21 @@ const getTodoById = async (req, res) => {
   }
 }
 
+const addTodo = async (req, res) => {
+  const { task } = req.body;
+  const addTodoQuery = "INSERT INTO todos (task, completed) VALUES ($1, false) RETURNING *";
+
+  try {
+    const results = await pool.query(addTodoQuery,[task]);
+    console.log(results.rows)
+    res.status(201).json(results.rows)
+  } catch (error) {
+    res.status (500).json({message: error.message})
+  }
+}
+
 module.exports = {
   getTodos,
-  getTodoById
+  getTodoById,
+  addTodo,
 };
