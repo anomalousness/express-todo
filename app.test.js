@@ -42,4 +42,16 @@ describe('App', () => {
       expect(response.body[0].completed).toBe(completed)
     })
   })
+
+  describe('POST /todos', () => {
+    test.each(['Swim', 'Climb', 'Code'])('should return an array with a single todo specified by ID and status 200', async (task) => {
+      // Act
+      const response = (await request(app).post('/todos').send({task}));
+      // Assert
+      expect(response.status).toBe(201);
+      expect(response.body.length).toBe(1);
+      expect(response.body[0].task).toBe(task)
+      expect(response.body[0].completed).toBe(false)
+    })
+  })
 });

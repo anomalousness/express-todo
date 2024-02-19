@@ -29,7 +29,6 @@ const addTodo = async (req, res) => {
 
   try {
     const results = await pool.query(addTodoQuery,[task]);
-    console.log(results.rows)
     res.status(201).json(results.rows)
   } catch (error) {
     res.status (500).json({message: error.message})
