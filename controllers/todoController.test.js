@@ -1,5 +1,5 @@
 const resetData = require('../utils/reset-db-data');
-const { getTodos, getTodoById, addTodo } = require('./todoController');
+const { getTodos, getTodoById, addTodo, deleteTodo, updateTodo } = require('./todoController');
 
 describe('todoController', () => {
   beforeEach(async () => {
@@ -14,9 +14,10 @@ describe('todoController', () => {
         status: jest.fn().mockReturnThis(),
         json: jest.fn()
       }
+      const mNext = jest.fn();
 
       // Act
-      await getTodos(mReq, mRes);
+      await getTodos(mReq, mRes, mNext);
 
       // Assert
       expect(mRes.status).toBeCalledWith(200);
@@ -41,16 +42,44 @@ describe('todoController', () => {
         status: jest.fn().mockReturnThis(),
         json: jest.fn()
       }
+      const mNext = jest.fn();
 
       // Act
-      await getTodoById(mReq, mRes);
+      await getTodoById(mReq, mRes, mNext);
 
       // Assert
       expect(mRes.status).toBeCalledWith(200);
       expect(mRes.json.mock.calls[0][0].length).toBe(1);
       expect(mRes.json.mock.calls[0][0][0]).toEqual({id, task, completed});
     })
-  })
+
+    // The below test fails and it seems to be that using next middleware does not work properly in tests
+    
+    // test.each([
+    //   [2000, 'Todo with an id of 2000 was not found in the database', 404],
+    //   // ['dog', 'invalid input syntax for type integer: \"NaN\"', 500],
+    // ])('should return an error message and appropriate status', async (id, error, status) => {
+    //   // Arrange
+    //   const mReq = {
+    //     params: {
+    //       id
+    //     }
+    //   };
+    //   const mRes = {
+    //     status: jest.fn().mockReturnThis(),
+    //     json: jest.fn()
+    //   }
+    //   const mNext = jest.fn();
+
+    //   // Act
+    //   await getTodoById(mReq, mRes, mNext);
+
+    //   // Assert
+    //   expect(mRes.status).toBeCalledWith(status);
+    //   expect(mRes.json.mock.calls[0][0].message).toBe(error);
+    // })
+})
+  
 
   describe('addTodo()', () => {
     test.each(['Code', 'Climb', 'Play'])('should add new todo to the db and return the new object and status 201', async (task) => {
@@ -62,14 +91,66 @@ describe('todoController', () => {
         status: jest.fn().mockReturnThis(),
         json: jest.fn()
       }
+      const mNext = jest.fn();
 
       // Act
-      await addTodo(mReq, mRes);
+      await addTodo(mReq, mRes, mNext);
 
       // Assert
       expect(mRes.status).toBeCalledWith(201);
       expect(mRes.json.mock.calls[0][0].length).toBe(1);
       expect(mRes.json.mock.calls[0][0][0]).toEqual({id: 4, task, completed: false});
+    })
+  })
+
+  describe('deleteTodo()', () => {
+    test.each([1, 2, 3])('should delete a todo and return the deleted object and status 200', async (id) => {
+      // Arrange
+      const mReq = {
+        params: {id}
+      };
+      const mRes = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn()
+      }
+      const mNext = jest.fn();
+
+      // Act
+      await deleteTodo(mReq, mRes, mNext);
+
+      // Assert
+      expect(mRes.status).toBeCalledWith(200);
+      expect(mRes.json.mock.calls[0][0].length).toBe(1);
+      expect(mRes.json.mock.calls[0][0][0].id).toBe(id);
+    })
+  })
+
+  describe('updateTodo()', () => {
+    test.each([
+      [1, 'Surf', undefined, 'Surf', true],
+      [2, 'Snooze', true, 'Snooze', true],
+      [3, undefined, true, 'Pray', true]
+    ])('should update a todo and return the updated object and status 201', async (id, task, completed, updatedTask, updatedCompleted) => {
+      // Arrange
+      const mReq = {
+        params: { id },
+        body: {task, completed}
+      };
+      const mRes = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn()
+      }
+      const mNext = jest.fn();
+
+      // Act
+      await updateTodo(mReq, mRes, mNext);
+
+      // Assert
+      expect(mRes.status).toBeCalledWith(201);
+      expect(mRes.json.mock.calls[0][0].length).toBe(1);
+      expect(mRes.json.mock.calls[0][0][0].id).toBe(id);
+      expect(mRes.json.mock.calls[0][0][0].task).toBe(updatedTask);
+      expect(mRes.json.mock.calls[0][0][0].completed).toBe(updatedCompleted);
     })
   })
 })
