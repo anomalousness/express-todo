@@ -44,8 +44,8 @@ describe('App', () => {
 
     test.each([
       [2000, 'Todo with an id of 2000 was not found in the database', 404],
-      ['dog', 'invalid input syntax for type integer: \"NaN\"', 500],
-    ])('should return an error message and an appropriate status', async (id, errorMessage, status) => {
+      ['dog', 'ID must be a number', 400],
+    ])('should return an error message and an appropriate status when id param is %s', async (id, errorMessage, status) => {
       // Act
       const response = await request(app).get(`/todos/${id}`);
       // Assert

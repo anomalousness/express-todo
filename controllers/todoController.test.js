@@ -31,7 +31,7 @@ describe('todoController', () => {
       [1, 'Eat', true],
       [2, 'Sleep', false],
       [3, 'Pray', false]
-    ])('should return an array containing a single todo object and status 200', async (id, task, completed) => {
+    ])('should return an array containing a single todo object and status 200 when called with a param id of %s', async (id, task, completed) => {
       // Arrange
       const mReq = {
         params: {
@@ -53,31 +53,33 @@ describe('todoController', () => {
       expect(mRes.json.mock.calls[0][0][0]).toEqual({id, task, completed});
     })
 
-    // The below test fails and it seems to be that using next middleware does not work properly in tests
-    
-    // test.each([
-    //   [2000, 'Todo with an id of 2000 was not found in the database', 404],
-    //   // ['dog', 'invalid input syntax for type integer: \"NaN\"', 500],
-    // ])('should return an error message and appropriate status', async (id, error, status) => {
-    //   // Arrange
-    //   const mReq = {
-    //     params: {
-    //       id
-    //     }
-    //   };
-    //   const mRes = {
-    //     status: jest.fn().mockReturnThis(),
-    //     json: jest.fn()
-    //   }
-    //   const mNext = jest.fn();
+    test.each([
+      [2000, 'Todo with an id of 2000 was not found in the database', 404],
+      ['dog', 'ID must be a number', 400],
+    ])('should return an error message and appropriate status when the id param is %s', async (id, error, status) => {
+      // Arrange
+      const mReq = {
+        params: {
+          id
+        }
+      };
+      const mRes = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn()
+      }
+      const mNext = jest.fn();
 
-    //   // Act
-    //   await getTodoById(mReq, mRes, mNext);
+      // Act
+      await getTodoById(mReq, mRes, mNext);
 
-    //   // Assert
-    //   expect(mRes.status).toBeCalledWith(status);
-    //   expect(mRes.json.mock.calls[0][0].message).toBe(error);
-    // })
+      // Assert
+      expect(mNext).toHaveBeenCalledWith({ "message": error, "status": status });
+      // NOTE: The following two assertions are another way to test the above assertion
+      expect(mNext.mock.calls[0][0].message).toEqual(error);
+      expect(mNext.mock.calls[0][0].status).toEqual(status);
+      expect(mRes.status).not.toHaveBeenCalled();
+      expect(mRes.json).not.toHaveBeenCalled();
+    })
 })
   
 

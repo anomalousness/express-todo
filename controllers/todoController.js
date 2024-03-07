@@ -13,13 +13,14 @@ const getTodos = async (req, res, next) => {
 
 const getTodoById = async (req, res, next) => {
   const id = getIdNumber(req);
+  if (typeof id !== 'number' || isNaN(id)) return next({ status: 400, message: "ID must be a number" });
   const getSingleTodoQuery = "SELECT * FROM todos WHERE id = $1";
 
   try {
     const results = await pool.query(getSingleTodoQuery, [id]);
-    console.log(results.rows)
+    // console.log(results.rows)
     if (results.rows.length === 0) {
-      console.log('Calling Next', results.rows)
+      // console.log('Calling Next', results.rows)
       return next({status: 404, message: `Todo with an id of ${id} was not found in the database`})
     } 
     // if (results.rows.length === 0) res.status(404).json( {message: `Todo with an id of ${id} was not found in the database`})
