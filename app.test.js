@@ -65,7 +65,7 @@ describe('App', () => {
       expect(response.body[0].completed).toBe(false)
     })
 
-    test.each(['', null, undefined])('should return an error message and an appropriate status', async (task) => {
+    test.each(['', null, undefined])('should return an error message and an appropriate status when the req.body task property is "%s"', async (task) => {
       // Act
       const response = (await request(app).post('/todos').send({task}));
       // Assert

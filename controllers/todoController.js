@@ -18,11 +18,8 @@ const getTodoById = async (req, res, next) => {
 
   try {
     const results = await pool.query(getSingleTodoQuery, [id]);
-    // console.log(results.rows)
-    if (results.rows.length === 0) {
-      // console.log('Calling Next', results.rows)
-      return next({status: 404, message: `Todo with an id of ${id} was not found in the database`})
-    } 
+    if (results.rows.length === 0) return next({status: 404, message: `Todo with an id of ${id} was not found in the database`})
+    // NOTE: The following line is an alternative way to write the above if statement by-passing the next function
     // if (results.rows.length === 0) res.status(404).json( {message: `Todo with an id of ${id} was not found in the database`})
     res.status(200).json(results.rows)
   } catch (error) {
@@ -32,6 +29,7 @@ const getTodoById = async (req, res, next) => {
 
 const addTodo = async (req, res, next) => {
   const { task } = req.body;
+  if ((task && typeof task !== 'string') || task === false) return next({ status: 400, message: 'Task must be a string' });
   if (!task) return next({ status: 400, message: 'No task data provided' });
   const addTodoQuery = "INSERT INTO todos (task, completed) VALUES ($1, false) RETURNING *";
 
@@ -63,8 +61,9 @@ const updateTodo = async (req, res, next) => {
   const idExists = await checkIdExists(id);
   if (!idExists) return next({ status: 404, message: `Todo with an id of ${id} was not found in the database` });
   const { task, completed } = req.body;
+  if (task && typeof task !== 'string') return next({ status: 400, message: 'Task must be a string' });
+  if (completed && typeof completed !== 'boolean') return next({ status: 400, message: 'Completed must be a boolean' });
   const { query, params } = constructUpdateQuery(id, task, completed);
-  // console.log(query, params)
 
   if (params.length < 2) return next({ status: 400, message: 'No update data provided' });
 
