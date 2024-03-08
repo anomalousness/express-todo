@@ -27,8 +27,8 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
       env:
-        DB_USERNAME=todolist_user
-        DB_PASSWORD=complex_password
+        DB_USERNAME: todolist_user
+        DB_PASSWORD: complex_password
     - run: npm ci
     # - run: npm run build --if-present
     - run: npm start
