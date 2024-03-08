@@ -27,8 +27,5 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
       - run: npm ci
-        # with:
-        #   cache: 'npm'
-
       - run: npm start
       - run: npm test
