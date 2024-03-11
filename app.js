@@ -12,7 +12,6 @@ app.get('/', (req, res, next) => {
 app.use('/todos', todoRoutes);
 
 app.use((err, req, res, next) => {
-  // console.log('In Next:', err.message)
   const status = err.status || 500;
   res.status(status).json({ message: err.message });
 });
