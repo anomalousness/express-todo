@@ -17,9 +17,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Server and tests on backend
+      - name: Install Jest globally
+        run: npm install -g jest
+
+      - name: Start server and run tests
         env:
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_USERNAME: todolist_user
+          DB_PASSWORD: complex_password
         run:
           npm install && node server.js & sleep 10 && npx jest --detectOpenHandles --forceExit
