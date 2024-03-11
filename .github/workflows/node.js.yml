@@ -5,7 +5,7 @@ name: CI test
 
 on:
   push:
-    branches: [ "main", "test-fix" ]
+    branches: [ "main", "test-fix", "ci" ]
   pull_request:
     branches: [ "main", "test-fix" ]
 
